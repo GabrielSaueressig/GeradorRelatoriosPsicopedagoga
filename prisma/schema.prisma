@@ -1,0 +1,43 @@
+
+
+// Configuração de conexão com o  Postgres
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+//O Paciente
+model Paciente {
+  id        String     @id @default(uuid())
+  nome      String
+  consultas Consulta[]
+  createdAt DateTime   @default(now())
+}
+
+//A Consulta em uma data específica
+model Consulta {
+  id         String               @id @default(uuid())
+  data       DateTime             @default(now())
+  pacienteId String
+  paciente   Paciente             @relation(fields: [pacienteId], references: [id], onDelete: Cascade)
+  atividades AtividadeRealizada[] 
+}
+
+// O que foi feito naquela consulta específica
+model AtividadeRealizada {
+  id         String   @id @default(uuid())
+  nome       String   
+  status     Status   
+  consultaId String
+  consulta   Consulta @relation(fields: [consultaId], references: [id], onDelete: Cascade)
+}
+
+// O Enum garante que ninguém salve um status que não existe
+enum Status {
+  ADQUIRIDO
+  NAO_ADQUIRIDO
+  EM_ANDAMENTO
+}
